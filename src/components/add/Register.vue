@@ -133,7 +133,7 @@ export default {
         this.axios.get(url
         ).then((response)=>{
           if(response.data.code === '20000') {
-            this.ruleForm.trueCode = response.data.verifyCode;
+            this.ruleForm.trueCode = response.data.data.verifyCode;
           } else {
             alert(response.data.message);
           }

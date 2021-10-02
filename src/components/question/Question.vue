@@ -1,7 +1,7 @@
 <!--
  * @Author: your name
  * @Date: 2021-09-29 10:08:58
- * @LastEditTime: 2021-09-30 13:15:06
+ * @LastEditTime: 2021-10-02 10:38:20
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \VSWorkSpace\paper_creator\src\components\question\Question.vue
@@ -21,17 +21,17 @@
         </el-button-group>
       </el-aside>
       <el-main>
-        <span>dddd</span>
+        <el-span v-model="currentNumber">NO.{{currentNumber}} {{questions[currentNumber]}}</el-span>
         <el-form-item>
           <el-radio-group v-model="questionForm.selection" size="large">
-            <el-radio label="1">A: dadas</el-radio>
-            <el-radio label="2">B: dasdas</el-radio>
-            <el-radio label="3">C: dasdas</el-radio>
-            <el-radio label="4">D: dadas</el-radio>
+            <el-radio label="1">A: {{answer[currentNumber]}}</el-radio>
+            <el-radio label="2">B: {{answer1[currentNumber]}}</el-radio>
+            <el-radio label="3">C: {{answer2[currentNumber]}}</el-radio>
+            <el-radio label="4">D: {{answer3[currentNumber]}}</el-radio>
           </el-radio-group>          
         </el-form-item>  
-        <el-button type="primary" @click="prev">上一题</el-button>
-        <el-button type="primary" @click="next">下一题</el-button>
+        <el-button id="prev" type="primary" @click="prev">上一题</el-button>
+        <el-button id="next" type="primary" @click="next">下一题</el-button>
         <el-button type="primary" @click="submitPaper">提交试卷</el-button>
       </el-main>    
     </el-container>
@@ -55,17 +55,20 @@ export default {
           selection: '',
           resultString: '',
         },
-        isDisabled: [false,false,false,false,true,true,true,
+        isDisabled: [true,true,true,true,true,true,true,
                     true,true,true,true,true,true,true,
                     true,true,true,true,true,true,true,
-                    true,true,true,true,true,true,true,false,false],
-        body: [{
-          question: '',
-          answer: '',
-        }],
+                    true,true,true,true,true,true,true,true,true],
+        currentNumber : 1,
+        questions: [],
+        answer: [],
+        answer1 : [],
+        answer2 : [],
+        answer3 : [],
       };
     },
     mounted: function() {
+      var _this = this;
       var many = document.getElementById("manyButts");
       for (let i = 1; i <= 30; i++) {
         var btn = document.createElement("input");
@@ -73,10 +76,9 @@ export default {
         btn.className = "butt";    
         btn.id = "b" + i;
         btn.value = i;
-        btn.disabled = this.isDisabled[i-1];
+        btn.disabled = this.isDisabled[i-1]; // 开始时都不能用
         btn.onclick = function () {
-          btn.backgroundColor = "red";
-          alert("ddd");
+          _this.currentNumber = btn.id;
         }
         many.appendChild(btn);  
       };
@@ -89,19 +91,47 @@ export default {
     },
     methods: {
       getPaper() {
-        alert('getPaper!');
+        // 设置按钮是否可用
+        for (let i = 1; i <= 30; i++) {
+          if ( i <= this.questionForm.num) {
+            isDisabled[i - 1] = false;
+          } else {
+            isDisabled[i - 1] = true;
+          }
+          document.getElementById("b" + i).disabled = isDisabled[i - 1];
+        }
+        var url = "http://localhost:8081/getPaper/" + this.questionForm.num;
+        this.axios.get(url
+        ).then((response)=>{
+          if(response.data.code === '20000') {
+            this.questions = response.data.data.questions;
+            this.answer = response.data.data.answer;
+          } else {
+            alert(response.data.message);
+          }
+        })
       },
       prev() {
-        alert('prev!');
+        if (currentNumber == 1) {
+          document.getElementById("prev").disabled = true;
+        } else {
+          document.getElementById("prev").disabled = false;
+          this.currentNumber--;
+        }
       },
       next() {
-        alert('next!');
+        if (currentNumber == this.questionForm.num) {
+          document.getElementById("next").disabled = true;
+        } else {
+          document.getElementById("next").disabled = false;
+          this.currentNumber++;
+        }
       },
       submitPaper() {
         alert('submitPaper!');
       },
       reTest() {
-        alert('reTest!');
+        this.getPaper();
       },
       showCounts() {
         alert('showCounts!');
