@@ -30,7 +30,6 @@
 </template>
 
 <script>
-import qs from 'qs';
   export default {
     name: "Login",
     data() {
@@ -64,22 +63,28 @@ import qs from 'qs';
                 password: this.loginForm.password,
               };
             let _this = this;
-              console.log(qs.stringify(params));
-              this.axios.post('http://localhost:8081/login',qs.stringify(params)
+              this.axios.post('http://localhost:8081/login',params
               ).then(function(response) {
-                if(response.data.code === "20000"){
+                if(response.data.code === 20000){
+                  this.$message({
+                    message: '登陆成功',
+                    type: 'success'
+                  });
                   //将用户名和密码存储到session当中
                   sessionStorage.setItem('phone', _this.loginForm.phone);
                   sessionStorage.setItem('password', _this.loginForm.password);
-                  sessionStorage.setItem('username', response.data.message.username);
+                  sessionStorage.setItem('username', response.data.data.username);
                   // 使用 vue-router 路由到指定页面，该方式称之为编程式导航
                   _this.$router.push("/main");   
                 } else {
-                  alert(response.data.message);
+                    this.$message({
+                      message: response.data.message,
+                      type: 'error'
+                    });
                 }
               }).catch(error => {
                   console.error(error);
-                  alert("出现错误");
+                  this.$message.error('出现异常，请联系管理员');
               })
           } else {
             this.dialogVisible = true;

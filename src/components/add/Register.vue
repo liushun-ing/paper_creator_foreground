@@ -1,7 +1,7 @@
 <!--
  * @Author: your name
  * @Date: 2021-09-11 15:40:16
- * @LastEditTime: 2021-09-28 20:33:25
+ * @LastEditTime: 2021-10-02 15:40:43
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \VSWorkSpace\myblock\src\components\add\AddUser.vue
@@ -37,7 +37,6 @@
 </template>
 
 <script>
-import qs from 'qs';
 export default {
     name: 'Register',
     data() {
@@ -107,17 +106,23 @@ export default {
                 password: this.ruleForm.pass,
                 phone: this.ruleForm.trueCode
                 }
-                console.log(qs.stringify(params));
-                this.axios.post('http://localhost:8081/register',qs.stringify(params)
+                this.axios.post('http://localhost:8081/register',params
                 ).then(function(response) {
-                if(response.data.code === "20000"){
-                    _this.$router.push({path: '/login'});
+                if(response.data.code === 20000){
+                  this.$message({
+                    message: '注册成功，请登录',
+                    type: 'success'
+                  });
+                  _this.$router.push({path: '/login'});
                 }else{
-                    alert(response.data.message);
+                    this.$message({
+                      message: response.data.message,
+                      type: 'error'
+                    });
                 }
                 }).catch(error => {
                     console.error(error);
-                    alert("出现错误");
+                    this.$message.error('出现异常，请联系管理员');
                 })
           } else {
             console.log('error submit!!');
@@ -132,10 +137,13 @@ export default {
         var url = "http://localhost:8081/verify/" + this.ruleForm.phone;
         this.axios.get(url
         ).then((response)=>{
-          if(response.data.code === '20000') {
+          if(response.data.code === 20000) {
             this.ruleForm.trueCode = response.data.data.verifyCode;
           } else {
-            alert(response.data.message);
+            this.$message({
+              message: response.data.message,
+              type: 'error'
+            });
           }
         })
       }

@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-09-28 09:59:40
- * @LastEditTime: 2021-09-30 12:42:07
+ * @LastEditTime: 2021-10-02 15:43:58
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \VSWorkSpace\paper_creator\src\main.js
