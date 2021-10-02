@@ -1,16 +1,16 @@
 <!--
  * @Author: your name
  * @Date: 2021-09-29 10:08:58
- * @LastEditTime: 2021-10-02 19:15:04
+ * @LastEditTime: 2021-10-02 20:05:01
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \VSWorkSpace\paper_creator\src\components\question\Question.vue
 -->
 <template>
-  <el-form ref="form" :model="questionForm" size="large">
-    <el-form-item label="题目数量" style="text-align: left;">
-        <el-input v-model="questionForm.number" style="width: 20%;" placeholder="请输入题目数量"></el-input>
-        <el-button type="primary" :span="12" @click="getPaper">生成试卷</el-button>
+  <el-form ref="questionForm" :model="questionForm" :rules="rules" size="large">
+    <el-form-item label="题目数量" style="text-align: left;" prop="number">
+        <el-input v-model="questionForm.number" style="width: 20%;" placeholder="请输入题目数量10-30" autocomplete="off"></el-input>
+        <el-button type="primary" :span="12" @click="getPaper('questionForm')">生成试卷</el-button>
     </el-form-item>
     <el-container id="quesContainer">
       <el-aside style="font-size: 16px; text-align: center;">
@@ -49,6 +49,16 @@ export default {
   name: 'question',
   props: ['type'],
   data() {
+      var validateNumber = (rule, value, callback) => {
+        let reg= /^\d{2}$/
+        if(!reg.test(value)) {
+          callback(new Error('输入格式错误'))
+        } else if (value < 10 || value > 30) {
+          callback(new Error('范围不匹配'));
+        } else {
+          callback();
+        }
+      };
       return {
         questionForm: {
           number: '',
@@ -66,6 +76,11 @@ export default {
         answerC : ['13','23','33','43','53'],
         answerD : ['14','24','34','44','54'],
         score: '',
+        rules: {
+          number: [
+            { validator: validateNumber, trigger: 'blur' }
+          ]
+        }
       };
     },
     mounted: function() {
@@ -80,6 +95,11 @@ export default {
         btn.disabled = _this.isDisabled[i-1]; // 开始时都不能用
         btn.onclick = function () {
           _this.currentNumber = i;
+          if (_this.questionForm.resultString[_this.currentNumber - 1] != null) {
+            _this.questionForm.selection = _this.questionForm.resultString[_this.currentNumber - 1];
+          } else {
+            _this.questionForm.selection = '';
+          }
         }
         many.appendChild(btn);
       };
@@ -92,39 +112,58 @@ export default {
     },
     methods: {
       getPaper() {
-        // 设置按钮是否可用
-        for (let i = 1; i <= 30; i++) {
-          if ( i <= this.questionForm.number) {
-            this.isDisabled[i - 1] = false;
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+            this.currentNumber = 1;
+            this.questionForm.selection = '';
+            this.questionForm.resultString = [];
+            // 设置按钮是否可用
+            for (let i = 1; i <= 30; i++) {
+              if ( i <= this.questionForm.number) {
+                this.isDisabled[i - 1] = false;
+              } else {
+                this.isDisabled[i - 1] = true;
+                document.getElementById("b" + i).style.color = "#909399";  //不能点击的题目序号颜色变淡
+              }
+              document.getElementById("b" + i).disabled = this.isDisabled[i - 1];
+            }
+            var url = "http://localhost:8081/question/" + this.type + "/" + this.questionForm.number;
+            this.axios.get(url
+            ).then((response)=>{
+              if(response.data.code === 20000) {
+                this.questions = response.data.data.questions;
+                this.answerA = response.data.data.answerA;
+                this.answerB = response.data.data.answerB;
+                this.answerC = response.data.data.answerC;
+                this.answerD = response.data.data.answerD;
+              } else {
+                  this.$message({
+                    message: response.data.message,
+                    type: 'error'
+                  });
+              }
+            })
           } else {
-            this.isDisabled[i - 1] = true;
+            console.log('error submit!!');
+            return false;
           }
-          document.getElementById("b" + i).disabled = this.isDisabled[i - 1];
-        }
-        var url = "http://localhost:8081/question/" + this.type + "/" + this.questionForm.number;
-        this.axios.get(url
-        ).then((response)=>{
-          if(response.data.code === 20000) {
-            this.questions = response.data.data.questions;
-            this.answerA = response.data.data.answerA;
-            this.answerB = response.data.data.answerB;
-            this.answerC = response.data.data.answerC;
-            this.answerD = response.data.data.answerD;
-          } else {
-              this.$message({
-                message: response.data.message,
-                type: 'error'
-              });
-          }
-        })
+        });
       },
       prev() {
-        this.questionForm.selection = '';
         this.currentNumber--;
+        if (this.questionForm.resultString[this.currentNumber - 1] != null) {
+          this.questionForm.selection = this.questionForm.resultString[this.currentNumber - 1];
+        } else {
+          this.questionForm.selection = '';
+        }
       },
       next() {
-        this.questionForm.selection = '';
         this.currentNumber++;
+        if (this.questionForm.resultString[this.currentNumber - 1] != null) {
+          this.questionForm.selection = this.questionForm.resultString[this.currentNumber - 1];
+        } else {
+          this.questionForm.selection = '';
+        }
       },
       submitPaper() {
         var userResult = '';
@@ -170,7 +209,7 @@ export default {
         });
       },
       saveResult(value) {
-        document.getElementById('b' + this.currentNumber).style.color = "#ABCDEF";
+        document.getElementById('b' + this.currentNumber).style.color = "#ABCDEF";  // 完成的题目序号颜色变成浅蓝色
         this.questionForm.resultString[this.currentNumber-1] = value;
       }
     }

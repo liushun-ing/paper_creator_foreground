@@ -1,7 +1,7 @@
 <!--
  * @Author: your name
  * @Date: 2021-09-11 15:40:16
- * @LastEditTime: 2021-10-02 15:40:43
+ * @LastEditTime: 2021-10-02 20:00:39
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \VSWorkSpace\myblock\src\components\add\AddUser.vue
@@ -13,11 +13,11 @@
             <el-form-item label="用户名" prop="username">
                 <el-input type="text" placeholder="请输入用户名" v-model="ruleForm.username" autocomplete="off"></el-input>
             </el-form-item>
-            <el-form-item label="手机号" prop="phone"> <!--prop 表单校验-->
+            <el-form-item label="手机号" prop="phone" ref="phone"> <!--prop 用于表单校验-->
               <el-col :span="14">
                 <el-input type="text" placeholder="请输入手机号" v-model="ruleForm.phone" autocomplete="off"></el-input>
               </el-col>
-              <el-button type="primary" @click="verify()">发送验证码</el-button>
+              <el-button type="primary" @click="verify('phone')">发送验证码</el-button>
             </el-form-item>
             <el-form-item label="验证码" prop="verifyCode">
                 <el-input type="verifyCode" placeholder="请输入4位验证码" v-model="ruleForm.verifyCode" autocomplete="off"></el-input>
@@ -40,6 +40,16 @@
 export default {
     name: 'Register',
     data() {
+      var validatePhone = (rule, value, callback) => {
+        let reg= /^(13[0-9]|14[5|7]|15[0|1|2|3|5|6|7|8|9]|18[0|1|2|3|5|6|7|8|9])\d{8}$/
+        if (value === '') {
+          callback(new Error('请输入手机号'));
+        } else if(!reg.test(value)) {
+          callback(new Error('手机号不正确'))
+        } else {
+          callback();
+        }
+      };
       var validatePass = (rule, value, callback) => {
         let reg= /^.*(?=.*[0-9])(?=.*[A-Z])(?=.*[a-z])\w{6,10}$/
         if (value === '') {
@@ -92,6 +102,9 @@ export default {
           ],
           username: [
             {required: true, message:'用户名不能为空', trigger: 'blur'}
+          ],
+          phone: [
+            { validator: validatePhone, trigger: 'blur' }
           ]
         }
       };
@@ -133,19 +146,26 @@ export default {
       resetForm(formName) {
         this.$refs[formName].resetFields();
       },
-      verify() {
-        var url = "http://localhost:8081/verify/" + this.ruleForm.phone;
-        this.axios.get(url
-        ).then((response)=>{
-          if(response.data.code === 20000) {
-            this.ruleForm.trueCode = response.data.data.verifyCode;
+      verify(phone) {
+        this.$refs[phone].validate((valid) => {
+          if (valid) {
+            var url = "http://localhost:8081/verify/" + this.ruleForm.phone;
+            this.axios.get(url
+            ).then((response)=>{
+              if(response.data.code === 20000) {
+                this.ruleForm.trueCode = response.data.data.verifyCode;
+              } else {
+                this.$message({
+                  message: response.data.message,
+                  type: 'error'
+                });
+              }
+            })
           } else {
-            this.$message({
-              message: response.data.message,
-              type: 'error'
-            });
+            console.log('error submit!!');
+            return false;
           }
-        })
+        });
       }
     }
 }
