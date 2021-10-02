@@ -1,7 +1,7 @@
 <!--
  * @Author: your name
  * @Date: 2021-09-28 20:35:20
- * @LastEditTime: 2021-09-29 17:23:06
+ * @LastEditTime: 2021-10-02 19:07:53
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \VSWorkSpace\paper_creator\src\components\Main.vue

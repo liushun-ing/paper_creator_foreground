@@ -1,7 +1,7 @@
 <!--
  * @Author: your name
  * @Date: 2021-09-29 10:08:58
- * @LastEditTime: 2021-10-02 16:18:13
+ * @LastEditTime: 2021-10-02 19:15:04
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \VSWorkSpace\paper_creator\src\components\question\Question.vue
@@ -101,7 +101,7 @@ export default {
           }
           document.getElementById("b" + i).disabled = this.isDisabled[i - 1];
         }
-        var url = "http://localhost:8081/getPaper/" + this.questionForm.number;
+        var url = "http://localhost:8081/question/" + this.type + "/" + this.questionForm.number;
         this.axios.get(url
         ).then((response)=>{
           if(response.data.code === 20000) {
@@ -132,11 +132,8 @@ export default {
         for (let i = 0; i < this.questionForm.resultString.length; i++) {
           userResult += this.questionForm.resultString[i];
         }
-        let params = {
-          result : userResult,
-        }
-        alert(userResult);
-        this.axios.post('http://localhost:8081/',params
+        var url = 'http://localhost:8081/countAnswer/' + userResult;
+        this.axios.get(url,
         ).then(function(response) {
         if(response.data.code === 20000){
             this.$message({
