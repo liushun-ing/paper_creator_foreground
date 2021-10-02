@@ -1,7 +1,7 @@
 <!--
  * @Author: your name
  * @Date: 2021-09-11 15:40:16
- * @LastEditTime: 2021-10-02 20:00:39
+ * @LastEditTime: 2021-10-02 22:31:25
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \VSWorkSpace\myblock\src\components\add\AddUser.vue
@@ -122,20 +122,20 @@ export default {
                 this.axios.post('http://localhost:8081/register',params
                 ).then(function(response) {
                 if(response.data.code === 20000){
-                  this.$message({
+                  _this.$message({
                     message: '注册成功，请登录',
                     type: 'success'
                   });
                   _this.$router.push({path: '/login'});
                 }else{
-                    this.$message({
+                    _this.$message({
                       message: response.data.message,
                       type: 'error'
                     });
                 }
                 }).catch(error => {
                     console.error(error);
-                    this.$message.error('出现异常，请联系管理员');
+                    _this.$message.error('出现异常，请联系管理员');
                 })
           } else {
             console.log('error submit!!');
@@ -147,15 +147,16 @@ export default {
         this.$refs[formName].resetFields();
       },
       verify(phone) {
+        let _this = this;
         this.$refs[phone].validate((valid) => {
           if (valid) {
             var url = "http://localhost:8081/verify/" + this.ruleForm.phone;
             this.axios.get(url
             ).then((response)=>{
               if(response.data.code === 20000) {
-                this.ruleForm.trueCode = response.data.data.verifyCode;
+                _this.ruleForm.trueCode = response.data.data.verifyCode;
               } else {
-                this.$message({
+                _this.$message({
                   message: response.data.message,
                   type: 'error'
                 });

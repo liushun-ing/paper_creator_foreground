@@ -1,7 +1,7 @@
 <!--
  * @Author: your name
  * @Date: 2021-09-28 20:35:20
- * @LastEditTime: 2021-10-02 20:11:29
+ * @LastEditTime: 2021-10-02 23:00:18
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \VSWorkSpace\paper_creator\src\components\Main.vue
@@ -68,7 +68,7 @@
 
 <script>
 export default {
-  name: 'main',
+  name: 'Main',
   data: function (){
     return {
       active:true,

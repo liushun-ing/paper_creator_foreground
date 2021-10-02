@@ -1,7 +1,7 @@
 <!--
  * @Author: your name
  * @Date: 2021-09-29 10:08:58
- * @LastEditTime: 2021-10-02 20:05:01
+ * @LastEditTime: 2021-10-02 23:03:13
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \VSWorkSpace\paper_creator\src\components\question\Question.vue
@@ -38,7 +38,7 @@
 
     <br>
     <el-form-item size="large" style="text-align: left;">
-        <el-button type="primary" @click="reTest">重新测试</el-button>
+        <el-button type="primary" @click="reTest('questionForm')">重新测试</el-button>
         <el-button type="info" @click="showCounts">查看分数</el-button>
     </el-form-item>
   </el-form>
@@ -70,11 +70,11 @@ export default {
                     true,true,true,true,true,true,true,
                     true,true,true,true,true,true,true,true,true],
         currentNumber : 1,
-        questions: ['111','222','333','444','555'],
-        answerA: ['11','21','31','41','51'],
-        answerB : ['12','22','32','42','52'],
-        answerC : ['13','23','33','43','53'],
-        answerD : ['14','24','34','44','54'],
+        questions: [],
+        answerA: [],
+        answerB : [],
+        answerC : [],
+        answerD : [],
         score: '',
         rules: {
           number: [
@@ -111,33 +111,34 @@ export default {
       // } 
     },
     methods: {
-      getPaper() {
+      getPaper(formName) {
+        var _this = this;
         this.$refs[formName].validate((valid) => {
           if (valid) {
-            this.currentNumber = 1;
-            this.questionForm.selection = '';
-            this.questionForm.resultString = [];
+            _this.currentNumber = 1;
+            _this.questionForm.selection = '';
+            _this.questionForm.resultString = [];
             // 设置按钮是否可用
             for (let i = 1; i <= 30; i++) {
-              if ( i <= this.questionForm.number) {
-                this.isDisabled[i - 1] = false;
+              if ( i <= _this.questionForm.number) {
+                _this.isDisabled[i - 1] = false;
               } else {
-                this.isDisabled[i - 1] = true;
+                _this.isDisabled[i - 1] = true;
                 document.getElementById("b" + i).style.color = "#909399";  //不能点击的题目序号颜色变淡
               }
-              document.getElementById("b" + i).disabled = this.isDisabled[i - 1];
+              document.getElementById("b" + i).disabled = _this.isDisabled[i - 1];
             }
-            var url = "http://localhost:8081/question/" + this.type + "/" + this.questionForm.number;
-            this.axios.get(url
+            var url = "http://localhost:8081/question/" + _this.type + "/" + _this.questionForm.number;
+            _this.axios.get(url
             ).then((response)=>{
               if(response.data.code === 20000) {
-                this.questions = response.data.data.questions;
-                this.answerA = response.data.data.answerA;
-                this.answerB = response.data.data.answerB;
-                this.answerC = response.data.data.answerC;
-                this.answerD = response.data.data.answerD;
+                _this.questions = response.data.data.questions;
+                _this.answerA = response.data.data.answerA;
+                _this.answerB = response.data.data.answerB;
+                _this.answerC = response.data.data.answerC;
+                _this.answerD = response.data.data.answerD;
               } else {
-                  this.$message({
+                  _this.$message({
                     message: response.data.message,
                     type: 'error'
                   });
@@ -166,36 +167,44 @@ export default {
         }
       },
       submitPaper() {
+        let _this = this;
         var userResult = '';
         // 拼接成字符串
         for (let i = 0; i < this.questionForm.resultString.length; i++) {
           userResult += this.questionForm.resultString[i];
         }
+        if (userResult.length != this.questionForm.number) {
+            _this.$message({
+              message: '请完成所有题目之后再提交',
+              type: 'info'
+            });          
+            return;
+          }
         var url = 'http://localhost:8081/countAnswer/' + userResult;
         this.axios.get(url,
         ).then(function(response) {
         if(response.data.code === 20000){
-            this.$message({
+            _this.$message({
               message: '提交成功',
               type: 'success'
             });
-            this.score = response.data.data.score;
+            _this.score = response.data.data.score;
         }else{
-            this.$message({
+            _this.$message({
               message: response.data.message,
               type: 'error'
           });
         }
         }).catch(error => {
             console.error(error);
-            this.$message.error('出现异常，请联系管理员');
+            _this.$message.error('出现异常，请联系管理员');
         })
       },
-      reTest() {
+      reTest(formName) {
         this.currentNumber = 1;
         this.questionForm.selection = '';
         this.questionForm.resultString = [];
-        this.getPaper();
+        this.getPaper(formName);
       },
       showCounts() {
         this.$alert('你最终的分数为' + this.score + '，错题已经整理到错题集，请自行查看', '得分情况', {

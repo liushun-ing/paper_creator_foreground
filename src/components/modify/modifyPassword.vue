@@ -1,7 +1,7 @@
 <!--
  * @Author: your name
  * @Date: 2021-09-29 10:09:22
- * @LastEditTime: 2021-09-29 17:20:44
+ * @LastEditTime: 2021-10-02 23:14:23
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \VSWorkSpace\paper_creator\src\components\modify\modifyPassword.vue
@@ -27,7 +27,6 @@
 </template>
 
 <script>
-import qs from 'qs';
 export default {
     name: 'modifyPassword',
     data() {
@@ -83,24 +82,32 @@ export default {
     },
     methods: {
       submitForm(formName) {
+        let _this = this;
         this.$refs[formName].validate((valid) => {
           if (valid) {
-            alert('submit!');
             let params = {
                 phone: window.sessionStorage.getItem('phone'),
                 password: this.ruleForm.pass,
                 }
-                console.log(qs.stringify(params));
-                this.axios.post('http://localhost:8081/changePassword',qs.stringify(params)
+                this.axios.post('http://localhost:8081/changePassword',params
                 ).then(function(response) {
-                if(response.data.code === "20000"){
-                    alert(response.data.message);
+                if(response.data.code === 20000){
+                  _this.$message({
+                    message: '修改密码成功',
+                    type: 'success'
+                  });
                 }else{
-                    alert(response.data.message);
+                  _this.$message({
+                    message: "修改密码失败",
+                    type: 'warning'
+                  });
                 }
                 }).catch(error => {
-                    console.error(error);
-                    alert("出现错误");
+                  console.error(error);
+                  _this.$message({
+                    message: '出现错误',
+                    type: 'error'
+                  });
                 })
           } else {
             console.log('error submit!!');

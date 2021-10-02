@@ -66,7 +66,7 @@
               this.axios.post('http://localhost:8081/login',params
               ).then(function(response) {
                 if(response.data.code === 20000){
-                  this.$message({
+                  _this.$message({
                     message: '登陆成功',
                     type: 'success'
                   });
@@ -77,14 +77,14 @@
                   // 使用 vue-router 路由到指定页面，该方式称之为编程式导航
                   _this.$router.push("/main");   
                 } else {
-                    this.$message({
+                    _this.$message({
                       message: response.data.message,
                       type: 'error'
                     });
                 }
               }).catch(error => {
                   console.error(error);
-                  this.$message.error('出现异常，请联系管理员');
+                  _this.$message.error('出现异常，请联系管理员');
               })
           } else {
             this.dialogVisible = true;
