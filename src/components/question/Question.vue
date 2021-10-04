@@ -1,7 +1,7 @@
 <!--
  * @Author: your name
  * @Date: 2021-09-29 10:08:58
- * @LastEditTime: 2021-10-02 23:03:13
+ * @LastEditTime: 2021-10-04 23:59:10
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \VSWorkSpace\paper_creator\src\components\question\Question.vue
@@ -112,6 +112,10 @@ export default {
     },
     methods: {
       getPaper(formName) {
+        for (let i = 1; i <= 30; i++) {
+          document.getElementById('b' + i).style.color = "#000000";
+          
+        }
         var _this = this;
         this.score = '';
         this.$refs[formName].validate((valid) => {
@@ -229,7 +233,17 @@ export default {
       saveResult(value) {
         document.getElementById('b' + this.currentNumber).style.color = "#ABCDEF";  // 完成的题目序号颜色变成浅蓝色
         this.questionForm.resultString[this.currentNumber-1] = value;
-      }
+      },
+    //   watch: {
+    //   // 如果路由有变化
+    //   '$route' (to, from){
+    //     console.log( to.path, from.path );
+    //     if(to.query.status != from.query.status){
+    //         this.status = to.query.status;
+    //       this.init();//重新加载数据
+    //     }
+    //   }
+    // },
     }
 }
 </script>

@@ -1,7 +1,7 @@
 <!--
  * @Author: your name
  * @Date: 2021-09-11 15:40:16
- * @LastEditTime: 2021-10-03 22:15:38
+ * @LastEditTime: 2021-10-04 23:36:08
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \VSWorkSpace\myblock\src\components\add\AddUser.vue
@@ -13,11 +13,11 @@
             <el-form-item label="用户名" prop="username">
                 <el-input type="text" placeholder="请输入用户名" v-model="ruleForm.username" autocomplete="off"></el-input>
             </el-form-item>
-            <el-form-item label="手机号" prop="phone" ref="phone"> <!--prop 用于表单校验-->
+            <el-form-item label="手机号" prop="phone"> <!--prop 用于表单校验-->
               <el-col :span="14">
                 <el-input type="text" placeholder="请输入手机号" v-model="ruleForm.phone" autocomplete="off"></el-input>
               </el-col>
-              <el-button type="primary" @click="verify('phone')">发送验证码</el-button>
+              <el-button type="primary" @click="verify('phone')" :disabled="isDisabled">发送验证码</el-button>
             </el-form-item>
             <el-form-item label="验证码" prop="verifyCode">
                 <el-input type="verifyCode" placeholder="请输入4位验证码" v-model="ruleForm.verifyCode" autocomplete="off"></el-input>
@@ -47,6 +47,7 @@ export default {
         } else if(!reg.test(value)) {
           callback(new Error('手机号不正确'))
         } else {
+          this.isDisabled = false;
           callback();
         }
       };
@@ -90,6 +91,7 @@ export default {
           verifyCode: '',
           trueCode: ''
         },
+        isDisabled: true,
         rules: {
           pass: [
             { validator: validatePass, trigger: 'blur' }
@@ -104,9 +106,9 @@ export default {
             {required: true, message:'用户名不能为空', trigger: 'blur'}
           ],
           phone: [
-            { validator: validatePhone, trigger: 'blur' }
+            { validator: validatePhone, trigger: ['blur', 'change'] }
           ]
-        }
+        },
       };
     },
     methods: {
@@ -117,7 +119,7 @@ export default {
             let params = {
                 username: this.ruleForm.username,
                 password: this.ruleForm.pass,
-                phone: this.ruleForm.trueCode
+                phone: this.ruleForm.phone
                 }
                 this.axios.post('http://localhost:8081/register',params
                 ).then(function(response) {
@@ -146,27 +148,20 @@ export default {
       resetForm(formName) {
         this.$refs[formName].resetFields();
       },
-      verify(phone) {
+      verify() {
         let _this = this;
-        this.$refs[phone].validate((valid) => {
-          if (valid) {
-            var url = "http://localhost:8081/verify/" + this.ruleForm.phone;
-            this.axios.get(url
-            ).then((response)=>{
-              if(response.data.code === 20000) {
-                _this.ruleForm.trueCode = response.data.data.verifyCode;
-              } else {
-                _this.$message({
-                  message: response.data.message,
-                  type: 'error'
-                });
-              }
-            })
+        var url = "http://localhost:8081/verify/" + this.ruleForm.phone;
+        this.axios.get(url
+        ).then((response)=>{
+          if(response.data.code === 20000) {
+            _this.ruleForm.trueCode = response.data.data.verify;
           } else {
-            console.log('error submit!!');
-            return false;
+            _this.$message({
+              message: response.data.message,
+              type: 'error'
+            });
           }
-        });
+        })
       }
     }
 }

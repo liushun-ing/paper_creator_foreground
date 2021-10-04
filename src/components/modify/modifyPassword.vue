@@ -1,7 +1,7 @@
 <!--
  * @Author: your name
  * @Date: 2021-09-29 10:09:22
- * @LastEditTime: 2021-10-04 09:17:32
+ * @LastEditTime: 2021-10-05 00:03:24
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \VSWorkSpace\paper_creator\src\components\modify\modifyPassword.vue
@@ -92,11 +92,12 @@ export default {
                 this.axios.post('http://localhost:8081/changePassword',params
                 ).then(function(response) {
                 if(response.data.code === 20000){
-                  sessionStorage.setItem("password", this.ruleForm.pass);
+                  sessionStorage.setItem("password", _this.ruleForm.pass);
                   _this.$message({
                     message: '修改密码成功',
                     type: 'success'
                   });
+                  _this.resetForm(formName);
                 }else{
                   _this.$message({
                     message: "修改密码失败",

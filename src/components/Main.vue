@@ -60,7 +60,7 @@
 
           <!-- 右侧主内容区 -->
           <div  class="main-right" >
-              <router-view></router-view>
+              <router-view :key="$route.name + ($route.params.type || '')"></router-view>
           </div>
     </main>
   </div>
