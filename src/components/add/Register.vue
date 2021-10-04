@@ -1,7 +1,7 @@
 <!--
  * @Author: your name
  * @Date: 2021-09-11 15:40:16
- * @LastEditTime: 2021-10-02 22:31:25
+ * @LastEditTime: 2021-10-03 22:15:38
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \VSWorkSpace\myblock\src\components\add\AddUser.vue
@@ -41,7 +41,7 @@ export default {
     name: 'Register',
     data() {
       var validatePhone = (rule, value, callback) => {
-        let reg= /^(13[0-9]|14[5|7]|15[0|1|2|3|5|6|7|8|9]|18[0|1|2|3|5|6|7|8|9])\d{8}$/
+        let reg= /^1[3|4|5|7|8][0-9]\d{8}$/
         if (value === '') {
           callback(new Error('请输入手机号'));
         } else if(!reg.test(value)) {

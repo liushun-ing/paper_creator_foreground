@@ -113,6 +113,7 @@ export default {
     methods: {
       getPaper(formName) {
         var _this = this;
+        this.score = '';
         this.$refs[formName].validate((valid) => {
           if (valid) {
             _this.currentNumber = 1;
@@ -201,21 +202,29 @@ export default {
         })
       },
       reTest(formName) {
+        this.score = '';
         this.currentNumber = 1;
         this.questionForm.selection = '';
         this.questionForm.resultString = [];
         this.getPaper(formName);
       },
       showCounts() {
-        this.$alert('你最终的分数为' + this.score + '，错题已经整理到错题集，请自行查看', '得分情况', {
-          confirmButtonText: '确定',
-          // callback: action => {
-          //   this.$message({
-          //     type: 'info',
-          //     message: `action: ${ action }`
-          //   });
-          // }
-        });
+        if (this.score != '') {
+          this.$alert('你最终的分数为' + this.score + '，错题已经整理到错题集，请自行查看', '得分情况', {
+            confirmButtonText: '确定',
+            // callback: action => {
+            //   this.$message({
+            //     type: 'info',
+            //     message: `action: ${ action }`
+            //   });
+            // }
+          });          
+        } else {
+          this.$alert("试卷未提交，请完成所有题目之后再查看", "得分情况" ,{
+            confirmButtonText: '确定',
+          });
+        }
+
       },
       saveResult(value) {
         document.getElementById('b' + this.currentNumber).style.color = "#ABCDEF";  // 完成的题目序号颜色变成浅蓝色
