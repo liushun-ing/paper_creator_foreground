@@ -1,7 +1,7 @@
 <!--
  * @Author: your name
  * @Date: 2021-09-11 15:40:16
- * @LastEditTime: 2021-10-04 23:36:08
+ * @LastEditTime: 2021-10-05 20:16:22
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \VSWorkSpace\myblock\src\components\add\AddUser.vue
@@ -31,6 +31,7 @@
             <el-form-item>
                 <el-button type="primary" @click="submitForm('ruleForm')">提交</el-button>
                 <el-button type="warning" @click="resetForm('ruleForm')">重置</el-button>
+                <el-button type="success" @click="toLogin()">返回登陆</el-button>
             </el-form-item>
         </el-form>
     </div>
@@ -155,6 +156,10 @@ export default {
         ).then((response)=>{
           if(response.data.code === 20000) {
             _this.ruleForm.trueCode = response.data.data.verify;
+            _this.$message({
+              message: '验证码发送成功，请注意查收',
+              type: 'error'
+            });
           } else {
             _this.$message({
               message: response.data.message,
@@ -162,6 +167,9 @@ export default {
             });
           }
         })
+      },
+      toLogin() {
+        this.$router.push("/login");
       }
     }
 }
