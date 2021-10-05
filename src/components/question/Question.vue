@@ -1,7 +1,7 @@
 <!--
  * @Author: your name
  * @Date: 2021-09-29 10:08:58
- * @LastEditTime: 2021-10-05 20:49:38
+ * @LastEditTime: 2021-10-05 22:22:57
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \VSWorkSpace\paper_creator\src\components\question\Question.vue
@@ -112,14 +112,14 @@ export default {
     },
     methods: {
       getPaper(formName) {
-        console.log("获得试卷");
+        //console.log("获得试卷");
         for (let i = 1; i <= 30; i++) {
           document.getElementById('b' + i).style.color = "#000000";
           
         }
         var _this = this;
         this.score = '';
-        this.$refs[formName].validate((valid) => {
+        this.$refs[formName].validate(async (valid) => {
           if (valid) {
             _this.currentNumber = 1;
             _this.questionForm.selection = '';
@@ -134,13 +134,13 @@ export default {
               }
               document.getElementById("b" + i).disabled = _this.isDisabled[i - 1];
             }
-            console.log("运行到发送get处了");
+            //console.log("运行到发送get处了");
             var url = "http://localhost:8081/question/" + _this.type + "/" + _this.questionForm.number;
-            _this.axios.get(url
+            await _this.axios.get(url
             ).then((response)=>{
-              console("等待");
+              //console("等待");
               if(response.data.code === 20000) {
-                console.log("获得试卷请求返回了");
+                //console.log("获得试卷请求返回了");
                 _this.questions = response.data.data.questions;
                 _this.answerA = response.data.data.answerA;
                 _this.answerB = response.data.data.answerB;
