@@ -31,7 +31,7 @@ For a detailed explanation on how things work, check out the [guide](http://vuej
 结队项目前端
 
 #### 软件架构
-软件架构说明
+本项目前端采用vue框架，并使用element-ui作为主要开发组件
 
 
 #### 安装教程
@@ -42,9 +42,9 @@ For a detailed explanation on how things work, check out the [guide](http://vuej
 
 #### 使用说明
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+1.  使用该项目需要npm，请先配置好npm环境
+2.  如果使用npm无法install，请尝试使用淘宝镜像cnpm进行install
+3.  启动该项目先执行`npm install`，然后执行指令`npm run dev`
 
 #### 参与贡献
 
